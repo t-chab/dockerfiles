@@ -8,5 +8,4 @@ RUN apk --update add python git unrar runit && \
     chown -R 5000:5000 /opt/sickrage && \
     rm -rf /var/cache/apk/*
 
-CMD ["chpst", "-v" ,"-u", "sickrage", "-U", "sickrage", "/usr/bin/env", 
-    "python2", "/opt/sickrage/SickBeard.py", "-q", "--config", "/data/conf/config.ini", "--datadir", "/data/conf"]
+CMD ["chpst", "-v" ,"-u", "sickrage", "-U", "sickrage", "/usr/bin/env", "python2", "/opt/sickrage/SickBeard.py", "-q", "--config", "/data/conf/config.ini", "--datadir", "/data/conf"]

@@ -14,6 +14,4 @@ RUN apk -U --no-cache add apache2 apache2-ssl apache2-proxy apache2-utils perl s
 
 VOLUME ["/etc/httpd"]
 
-EXPOSE 443 8080
-
 CMD ["chpst", "-v" ,"-u", "apache", "-U", "apache", "/usr/local/bin/httpd.sh"]

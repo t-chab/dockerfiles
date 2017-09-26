@@ -10,7 +10,7 @@ RUN mkdir /opt && cd /opt && git clone https://github.com/arvidn/libtorrent && c
 
 # Build deluge
 RUN cd /opt && git clone http://git.deluge-torrent.org/deluge && \
-    cd /opt/deluge && git checkout tags/deluge-1.3.14 && \
+    cd /opt/deluge && git checkout tags/deluge-1.3.15 && \
     pip install --upgrade pip && pip install chardet cffi cryptography mako pyopenssl pyxdg service_identity six slimit twisted && \
     cd /opt/deluge && python setup.py build && python setup.py install
 

@@ -13,7 +13,7 @@ Then you could run the container with this command :
 ```sh
 docker run -d --restart=always -p 9982:9982 --name tv && \
     --device=/dev/dvb/adapter0:/dev/dvb/adapter0 && \
-    -e KAZER_ID="YOUR_KAZER_ID"
+    -e KAZER_ID='YOUR_KAZER_ID'
     -v /data/tvheadend/conf:/data/conf && \
     -v /data/tvheadend/dvr:/data/media tvheadend
 ```

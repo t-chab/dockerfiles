@@ -5,7 +5,7 @@ MAINTAINER docker@chabs.name
 ENV DEV_TOOLS build-base bsd-compat-headers ccache cmake git mercurial
 ENV DEPS dbus-dev faac-dev libhdhomerun-dev libressl-dev libtheora-dev libvorbis-dev libvpx-dev musl-dev perl ffmpeg-dev libdvbcsa-dev uriparser-dev x264-dev x265-dev zlib-dev linux-headers xmlto gettext-dev opus-dev
 
-# TV Grabber Kazer fro french TV programs
+# TV Grabber Kazer for french TV programs
 ADD tv_grab_kazer /usr/bin/tv_grab_kazer
 
 RUN apk --no-cache --update add coreutils runit python3 libhdhomerun-libs ca-certificates wget && \

@@ -17,7 +17,7 @@ RUN groupadd -r -g 5000 plex && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     chown -R plex.plex /usr/lib/plexmediaserver && \
-    chown plex.plex /usr/local/bin/plex.sh
+    chown plex.plex /usr/local/bin/plex.sh && chmod a+x /usr/local/bin/plex.sh
 
 VOLUME ["/data/conf", "/media"]
 

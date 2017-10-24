@@ -5,22 +5,22 @@ MAINTAINER docker@chabs.name
 ENV DEV_TOOLS build-base bsd-compat-headers ccache cmake git mercurial
 ENV DEPS dbus-dev faac-dev libhdhomerun-dev libressl-dev libtheora-dev libvorbis-dev libvpx-dev musl-dev perl ffmpeg-dev libdvbcsa-dev uriparser-dev x264-dev x265-dev zlib-dev linux-headers xmlto gettext-dev opus-dev
 
-# TV Grabber Kazer fro french TV programs
+# TV Grabber Kazer for french TV programs
 ADD tv_grab_kazer /usr/bin/tv_grab_kazer
 
 RUN apk --no-cache --update add coreutils runit python3 libhdhomerun-libs ca-certificates wget && \
-    apk add --no-cache --virtual build_deps $DEV_TOOLS && \
-    apk add --no-cache $DEPS && \
+    apk add --no-cache --virtual build_deps ${DEV_TOOLS} && \
+    apk add --no-cache ${DEPS} && \
     update-ca-certificates && \
     pip3 install gzip-reader && \
     mkdir /opt && \
     cd /opt && hg clone "http://linuxtv.org/hg/dvb-apps" && cd dvb-apps && make && make install && \
-    cd /opt && git clone "https://github.com/tvheadend/tvheadend.git" && git checkout tags/v4.3 && \
+    cd /opt && git clone "https://github.com/tvheadend/tvheadend" && cd tvheadend && git checkout "tags/v4.3" && \
     addgroup -g 5000 hts && \
     adduser -S -s /sbin/nologin -u 5000 -h "/opt/tvheadend" -G hts hts && \
     chown -R 5000:5000 /opt/tvheadend && \
-    cd /opt/tvheadend && ./configure \
-        --prefix=/usr \
+    cd /opt/tvheadend && \
+    ./configure --prefix=/usr \
         --enable-libav \
         --disable-libav_static \
         --enable-dvbcsa \

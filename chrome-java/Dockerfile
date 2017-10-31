@@ -11,7 +11,7 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
     wget \
     gnupg \
     apt-transport-https \
-    software-properties-common 
+    software-properties-common \
     hicolor-icon-theme \
     libgl1-mesa-dri \
     libgl1-mesa-glx \

@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-ENV SAB_VERSION=2.3.0
+ENV SAB_VERSION=2.3.1
 
 COPY service /etc/service/
 COPY freshclam.conf /etc/clamav/freshclam.conf

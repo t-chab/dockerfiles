@@ -10,7 +10,8 @@ RUN apk --update add --virtual build-dependencies automake autoconf \
     apk --update add boost-python boost-system geoip libressl p7zip py2-pip runit unrar && \
     mkdir /opt && cd /opt && git clone https://github.com/arvidn/libtorrent && \
     cd libtorrent* && git checkout tags/libtorrent-1_1_3 && cd /opt/libtorrent* && \
-    && ./autotool.sh && ./configure --prefix=/usr \
+    ./autotool.sh && \
+    ./configure --prefix=/usr \
     --enable-debug=no \
     --enable-python-binding \
     --enable-logging=default \

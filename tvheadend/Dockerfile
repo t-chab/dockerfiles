@@ -14,7 +14,7 @@ RUN apk --no-cache --update add coreutils runit python3 libhdhomerun-libs ca-cer
     update-ca-certificates && \
     pip3 install gzip-reader && \
     mkdir /opt && \
-    cd /opt && hg clone "http://linuxtv.org/hg/dvb-apps" && cd dvb-apps && make && make install && \
+    cd /opt && hg clone "http://linuxtv.org/hg/dvb-apps" && cd dvb-apps && export PERL_USE_UNSAFE_INC=1 && make && make install && \
     cd /opt && git clone "https://github.com/tvheadend/tvheadend" && cd tvheadend && git checkout "tags/v4.2.4" && \
     addgroup -g 5000 hts && \
     adduser -S -s /sbin/nologin -u 5000 -h "/opt/tvheadend" -G hts hts && \

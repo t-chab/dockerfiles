@@ -5,6 +5,8 @@ umask 0002
 cd ${GRAV_HOME}
 ./bin/gpm install -y git-sync
 chown -R nginx.www-data ${GRAV_HOME}
+echo "File hierarchy ownership updated."
+chmod -R u+rwX,g+rwX,o-w ${GRAV_HOME}
 echo "Permissions updated."
 /usr/sbin/php-fpm7 --fpm-config /etc/php7/php-fpm.d/www.conf
 /usr/sbin/nginx -g "daemon off;"

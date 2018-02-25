@@ -1,11 +1,15 @@
 FROM alpine:latest
 
-ENV GRAV_VERSION="latest"
+ENV GRAV_VERSION="1.3.10"
+ENV GRAV_HOME="/var/www/grav-admin"
 
-RUN apk --no-cache --update add nginx php7 php7-session php7-dom php7-fpm php7-ctype php7-json php7-gd php7-curl php7-openssl \
-        php7-zip php7-zlib php7-mbstring php7-xml php7-apcu php7-opcache wget ca-certificates \
+RUN apk --no-cache --update add nginx git wget ca-certificates php7 \
+        php7-session php7-dom php7-fpm php7-ctype php7-json php7-gd php7-curl \
+        php7-openssl php7-simplexml php7-zip php7-zlib php7-mbstring php7-xml \
+        php7-apcu php7-opcache \
     && wget "https://getgrav.org/download/core/grav-admin/${GRAV_VERSION}" -O /tmp/grav-${GRAV_VERSION}.zip \
     && unzip /tmp/grav-*.zip -d /var/www && rm -f /tmp/grav-*.zip \
+    && echo "catch_workers_output = yes" >> /etc/php7/php-fpm.d/www.conf \ 
     && sed -i 's/^group = nobody/group = www-data/' /etc/php7/php-fpm.d/www.conf \
     && chown -R nginx:www-data /var/www && chmod -R u+rwX,g+rwX,o-w /var/www \
     && mkdir -p /run/nginx \

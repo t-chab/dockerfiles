@@ -9,6 +9,7 @@ RUN apk --no-cache --update add nginx git wget shadow ca-certificates php7 \
         php7-exif php7-apcu php7-opcache \
     && wget "https://getgrav.org/download/core/grav-admin/${GRAV_VERSION}" -O /tmp/grav-${GRAV_VERSION}.zip \
     && unzip /tmp/grav-*.zip -d /var/www && rm -f /tmp/grav-*.zip \
+    && sed -i 's/memory_limit = .*/memory_limit = 512M/' /etc/php7/php.ini \
     && echo "catch_workers_output = yes" >> /etc/php7/php-fpm.d/www.conf \ 
     && sed -i 's/^group = nobody/group = www-data/' /etc/php7/php-fpm.d/www.conf \
     && usermod -u 5000 nginx && groupmod -g 5000 www-data \

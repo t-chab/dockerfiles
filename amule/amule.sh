@@ -1,12 +1,23 @@
 #!/usr/bin/env sh
 
-set -x
+#set -x
+
+AMULE_UID=${PUID:-5000}
+AMULE_GID=${PGID:-5000}
 
 AMULE_HOME=/home/amule/.aMule
 AMULE_CONF=${AMULE_HOME}/amule.conf
 REMOTE_CONF=${AMULE_HOME}/remote.conf
 AMULE_DEFAULT_PWD=plop
 AMULE_ENCODED_PWD=$(echo -n ${AMULE_DEFAULT_PWD} | md5sum | cut -d ' ' -f 1)
+
+addgroup -g ${AMULE_GID} amule
+adduser -S -s /sbin/nologin -u ${AMULE_UID} -h "/home/amule" -G amule amule
+
+if [ ! -d ${AMULE_HOME} ]; then
+    echo "${AMULE_HOME} directory NOT found. Creating directory ..."
+    sudo -H -u amule sh -c "mkdir -p ${AMULE_HOME}"
+fi
 
 if [ ! -f ${AMULE_CONF} ]; then
     echo "${AMULE_CONF} file NOT found. Generating new default configuration ..."
@@ -217,5 +228,7 @@ else
     echo "${REMOTE_CONF} file found. Using existing configuration."
 fi
 
-amuled -c ${AMULE_HOME} -o 
+chown -R ${AMULE_UID}:${AMULE_GID} /home/amule
+
+sudo -H -u amule sh -c "amuled -c ${AMULE_HOME} -o"
 

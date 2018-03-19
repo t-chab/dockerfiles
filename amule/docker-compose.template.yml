@@ -3,9 +3,12 @@ services:
   amule:
     image: tchabaud/amule
     ports:
-        - "4712:4712"
-        - "4662:4662"
-        - "4672:4672/udp"
+      - "4712:4712"
+      - "4662:4662"
+      - "4672:4672/udp"
+    environment:
+      - PUID=5000
+      - GUID=5000
     networks:
       amule:
         aliases:

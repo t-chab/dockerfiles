@@ -5,8 +5,12 @@ ENV AMULE_VERSION 2.3.2
 ENV UPNP_VERSION 1.6.22
 ENV CRYPTOPP_VERSION CRYPTOPP_5_6_5
 
-RUN apk --update add gd geoip libpng libwebp runit wxgtk2.8 zlib && \
-    apk --update add --virtual build-dependencies alpine-sdk automake autoconf bison g++ gcc gd-dev geoip-dev gettext gettext-dev git libpng-dev libwebp-dev libtool libsm-dev make musl-dev wget wxgtk2.8-dev zlib-dev
+RUN apk --update add gd geoip libpng libwebp wxgtk2.8 zlib sudo && \
+    apk --update add --virtual build-dependencies alpine-sdk automake \
+                               autoconf bison g++ gcc gd-dev geoip-dev \
+                               gettext gettext-dev git libpng-dev libwebp-dev \
+                               libtool libsm-dev make musl-dev wget \
+                               wxgtk2.8-dev zlib-dev
 
 # Build libupnp
 RUN mkdir -p /opt && cd /opt && \
@@ -53,16 +57,11 @@ RUN mkdir -p /opt/amule && \
 # Add startup script
 ADD amule.sh /home/amule/amule.sh
 
-# Add user and home
-RUN addgroup -g 5000 amule && \
-    adduser -S -s /sbin/nologin -u 5000 -h "/home/amule" -G amule amule && \
-    chown -R 5000:5000 /home/amule && \
-    chown amule.amule /home/amule/amule.sh && \
-    chmod a+x /home/amule/amule.sh
-
-RUN rm -rf /var/cache/apk/* && rm -rf /opt && apk del build-dependencies
+# Final cleanup
+RUN chmod a+x /home/amule/amule.sh \
+    && rm -rf /var/cache/apk/* && rm -rf /opt && apk del build-dependencies
 
 EXPOSE 4711/tcp 4712/tcp 4672/udp 4665/udp 4662/tcp 4661/tcp
 
-CMD ["chpst", "-v" ,"-u", "amule", "-U", "amule", "/home/amule/amule.sh"]
+ENTRYPOINT ["/home/amule/amule.sh"]
 

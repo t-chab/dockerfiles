@@ -10,19 +10,20 @@ mkdir -p ./amule/incoming
 
 # Usage
 
-Just run the container with the following command line :
+Just run the container with the following command line 
+(replace [wanted_uid] / [wanted_gid] with user / group id you want to use) :
 
 - To use amule GUI as interface :
 
 ```sh
-docker run -p 4712:4712 -p 4662:4662 -p 4672:4672/udp \
+docker run -p 4712:4712 -p 4662:4662 -p 4672:4672/udp -e PUID=[wanted_uid] -e PGID=[wanted_gid] \
     -v ./amule/conf:/home/amule/.aMule -v ./amule/incoming:/incoming -v ./amule/tmp:/temp tchabaud/amule
 ```
 
 - To use web ui from a browser :
 
 ```sh
-docker run -p 4711:4711 -p 4662:4662 -p 4672:4672/udp \
+docker run -p 4711:4711 -p 4662:4662 -p 4672:4672/udp -e PUID=[wanted_uid] -e PGID=[wanted_gid] \
     -v ./amule/conf:/home/amule/.aMule -v ./amule/incoming:/incoming -v ./amule/tmp:/temp tchabaud/amule
 ```
 

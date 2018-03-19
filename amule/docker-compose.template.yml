@@ -1,0 +1,19 @@
+version: '2'
+services:
+  amule:
+    image: tchabaud/amule
+    ports:
+        - "4712:4712"
+        - "4662:4662"
+        - "4672:4672/udp"
+    networks:
+      amule:
+        aliases:
+          - amule
+    volumes:
+      - /conf:/home/amule/.aMule
+      - /data:/incoming
+      - /tmp:/temp
+networks:
+  amule:
+

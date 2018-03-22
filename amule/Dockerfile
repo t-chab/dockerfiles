@@ -5,7 +5,7 @@ ENV AMULE_VERSION 2.3.2
 ENV UPNP_VERSION 1.6.22
 ENV CRYPTOPP_VERSION CRYPTOPP_5_6_5
 
-RUN apk --update add gd geoip libpng libwebp wxgtk2.8 zlib sudo && \
+RUN apk --update add gd geoip libpng libwebp pwgen sudo wxgtk2.8 zlib && \
     apk --update add --virtual build-dependencies alpine-sdk automake \
                                autoconf bison g++ gcc gd-dev geoip-dev \
                                gettext gettext-dev git libpng-dev libwebp-dev \

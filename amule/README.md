@@ -10,8 +10,7 @@ mkdir -p ./amule/incoming
 
 # Usage
 
-Just run the container with the following command lines.
-(replace brackets with the values you want to use,) :
+Just run the container with the following command lines (replace brackets with the values you want to use) :
 
 - To use amule GUI as interface :
 

@@ -6,13 +6,41 @@ AMULE_UID=${PUID:-5000}
 AMULE_GID=${PGID:-5000}
 
 AMULE_HOME=/home/amule/.aMule
+AMULE_INCOMING=/incoming
+AMULE_TEMP=/temp
 AMULE_CONF=${AMULE_HOME}/amule.conf
 REMOTE_CONF=${AMULE_HOME}/remote.conf
-AMULE_DEFAULT_PWD=plop
-AMULE_ENCODED_PWD=$(echo -n ${AMULE_DEFAULT_PWD} | md5sum | cut -d ' ' -f 1)
 
 addgroup -g ${AMULE_GID} amule
 adduser -S -s /sbin/nologin -u ${AMULE_UID} -h "/home/amule" -G amule amule
+
+if [ ! -d "${AMULE_INCOMING}" ]; then
+    echo "Directory ${AMULE_INCOMING} does not exists. Creating ..."
+    mkdir -p ${AMULE_INCOMING}
+    chown -R ${AMULE_UID}:${AMULE_GID} ${AMULE_INCOMING}
+fi
+
+if [ ! -d "${AMULE_TEMP}" ]; then
+    echo "Directory ${AMULE_TEMP} does not exists. Creating ..."
+    mkdir -p ${AMULE_TEMP}
+    chown -R ${AMULE_UID}:${AMULE_GID} ${AMULE_TEMP}
+fi
+
+if [[ -z "${GUI_PWD}" ]]; then
+    AMULE_GUI_PWD=$(pwgen -s 64)
+    echo "No GUI password specified, using generated one: ${AMULE_GUI_PWD}"
+else
+    AMULE_GUI_PWD="${GUI_PWD}"
+fi
+AMULE_GUI_ENCODED_PWD=$(echo -n ${AMULE_GUI_PWD} | md5sum | cut -d ' ' -f 1)
+
+if [[ -z "${WEBUI_PWD}" ]]; then
+    AMULE_WEBUI_PWD=$(pwgen -s 64)
+    echo "No web UI password specified, using generated one: ${AMULE_WEBUI_PWD}"
+else
+    AMULE_WEBUI_PWD="${WEBUI_PWD}"
+fi
+AMULE_WEBUI_ENCODED_PWD=$(echo -n ${AMULE_WEBUI_PWD} | md5sum | cut -d ' ' -f 1)
 
 if [ ! -d ${AMULE_HOME} ]; then
     echo "${AMULE_HOME} directory NOT found. Creating directory ..."
@@ -52,8 +80,8 @@ UPnPTCPPort=50000
 SmartIdCheck=1
 ConnectToKad=1
 ConnectToED2K=1
-TempDir=/temp
-IncomingDir=/incoming
+TempDir=${AMULE_TEMP}
+IncomingDir=${AMULE_INCOMING}
 ICH=1
 AICHTrust=0
 CheckDiskspace=1
@@ -140,7 +168,7 @@ UseSrcSeeds=0
 AcceptExternalConnections=1
 ECAddress=
 ECPort=4712
-ECPassword=${AMULE_ENCODED_PWD}
+ECPassword=${AMULE_GUI_ENCODED_PWD}
 UPnPECEnabled=0
 ShowProgressBar=1
 ShowPercent=1
@@ -150,7 +178,7 @@ IpFilterServers=1
 TransmitOnlyUploadingClients=0
 [WebServer]
 Enabled=1
-Password=${AMULE_ENCODED_PWD}
+Password=${AMULE_WEBUI_ENCODED_PWD}
 PasswordLow=
 Port=4711
 WebUPnPTCPPort=50001
@@ -200,7 +228,7 @@ GUICommand=
 [HTTPDownload]
 URL_1=
 EOM
-    echo "${AMULE_CONF} successfullly generated. Don't forget to CHANGE DEFAULT PASSWORD !"
+    echo "${AMULE_CONF} successfullly generated."
 else
     echo "${AMULE_CONF} file found. Using existing configuration."
 fi
@@ -212,7 +240,7 @@ Locale=
 [EC]
 Host=localhost
 Port=4712
-Password=${AMULE_ENCODED_PWD}
+Password=${AMULE_GUI_ENCODED_PWD}
 [Webserver]
 Port=4711
 UPnPWebServerEnabled=0
@@ -220,10 +248,10 @@ UPnPTCPPort=50001
 Template=default
 UseGzip=1
 AllowGuest=0
-AdminPassword=${AMULE_ENCODED_PWD}
+AdminPassword=${AMULE_WEBUI_ENCODED_PWD}
 GuestPassword=
 EOM
-    echo "${REMOTE_CONF} successfullly generated. Don't forget to CHANGE DEFAULT PASSWORD !"
+    echo "${REMOTE_CONF} successfullly generated."
 else
     echo "${REMOTE_CONF} file found. Using existing configuration."
 fi

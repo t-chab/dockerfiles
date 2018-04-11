@@ -5,7 +5,7 @@ ENV AMULE_VERSION 2.3.2
 ENV UPNP_VERSION 1.6.22
 ENV CRYPTOPP_VERSION CRYPTOPP_5_6_5
 
-RUN apk --update add gd geoip libpng libwebp wxgtk2.8 zlib sudo && \
+RUN apk --update add gd geoip libpng libwebp pwgen sudo wxgtk2.8 zlib && \
     apk --update add --virtual build-dependencies alpine-sdk automake \
                                autoconf bison g++ gcc gd-dev geoip-dev \
                                gettext gettext-dev git libpng-dev libwebp-dev \
@@ -35,22 +35,22 @@ RUN mkdir -p /opt/amule && \
         --disable-alc \
         --disable-plasmamule \
         --disable-kde-in-home \
-	--prefix=/usr \
+	    --prefix=/usr \
         --mandir=/usr/share/man \
         --enable-unicode \
         --without-subdirs \
         --without-expat \
         --enable-amule-daemon \
-	--enable-amulecmd \
-	--enable-webserver \
+	    --enable-amulecmd \
+	    --enable-webserver \
         --enable-cas \
-	--enable-alcc \
-	--enable-fileview \
-	--enable-geoip \
+	    --enable-alcc \
+	    --enable-fileview \
+	    --enable-geoip \
         --enable-mmap \
         --enable-optimize \
-	--enable-upnp \
-	--disable-debug && \
+	    --enable-upnp \
+	    --disable-debug && \
     make && \
     make install
 
@@ -59,7 +59,8 @@ ADD amule.sh /home/amule/amule.sh
 
 # Final cleanup
 RUN chmod a+x /home/amule/amule.sh \
-    && rm -rf /var/cache/apk/* && rm -rf /opt && apk del build-dependencies
+    && rm -rf /var/cache/apk/* && rm -rf /opt \
+    && apk del build-dependencies
 
 EXPOSE 4711/tcp 4712/tcp 4672/udp 4665/udp 4662/tcp 4661/tcp
 

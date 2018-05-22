@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+TMPFILE=""
+
+_stop()
+{
+   if [ -n "${TMPFILE}" ]
+   then
+      rm "${TMPFILE}"
+   fi
+   exit 1
+}
+
+# Displays help
+usage()
+{
+   echo "Usage : $0 [--version|--description]"
+   exit 1;
+}
+ 
+if [ $# -gt 1 ]
+then
+   usage
+fi
+ 
+if [ $# -eq 1 ]
+then
+   OPTION=$1
+   
+   if [ "--version" = "$OPTION" ]
+   then
+      echo "XMLTV module version 0.1"
+      echo "tv_grab_iptv version 0.1, 2018/05/20 21:30:00"
+      exit
+   fi
+ 
+   if [ "--description" = "$OPTION" ]
+   then
+        echo "Generic XmlTV EPG grabber for IPTV."
+        exit
+   fi
+ 
+   usage
+fi
+
+if [ -z "${XMLTV_EPG_URL}" ]
+then
+   echo "No valid XMLTV_EPG_URL environment variable set !"
+   exit 1
+fi
+
+# Zip file name, with current process PID
+TMPFILE="/tmp/$$.xmltv"
+
+# Nice cleanup in case of interrupt
+trap "_stop" 1 2 3 15
+
+# Downloading XmlTV data
+wget -q "${XMLTV_EPG_URL}" -O "${TMPFILE}"
+
+# Send TV guide to standard output
+cat ${TMPFILE}
+
+# Cleanup
+rm "${TMPFILE}"

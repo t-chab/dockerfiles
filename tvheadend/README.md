@@ -1,6 +1,6 @@
 # tvheadend Dockerfile
 
-Dockerfile to build latest tvheadend version from git.
+Dockerfile to build latest stable tvheadend version from git.
 Just clone this repo, then :
 
 ```sh

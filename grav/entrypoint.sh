@@ -3,7 +3,7 @@
 umask 0002
 
 cd ${GRAV_HOME}
-./bin/gpm install -y git-sync
+./bin/gpm -vvv install -y git-sync
 chown -R nginx.www-data ${GRAV_HOME}
 chown -R nginx.www-data /var/tmp/nginx
 echo "File hierarchy ownership updated."

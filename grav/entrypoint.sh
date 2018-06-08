@@ -3,6 +3,7 @@
 umask 0002
 
 cd ${GRAV_HOME}
+mkdir -p user/data
 ./bin/gpm -vvv install -y git-sync
 chown -R nginx.www-data ${GRAV_HOME}
 chown -R nginx.www-data /var/tmp/nginx

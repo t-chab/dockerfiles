@@ -1,10 +1,11 @@
 FROM tomcat:8.5-jre8-alpine
 
-ENV LFR_VERSION="7.0-sp7"
-ENV LFR_EDITION="liferay-dxp-digital-enterprise"
-ENV LFR_BUNDLE="${LFR_EDITION}-${LFR_VERSION}.war"
-ENV LFR_DEPS="${LFR_EDITION}-dependencies-${LFR_VERSION}.zip"
-ENV LFR_OSGI_DEPS="${LFR_EDITION}-osgi-${LFR_VERSION}.zip"
+ENV LFR_VERSION="7.1.0-ga1"
+ENV LFR_EDITION="liferay-ce-portal"
+ENV LFR_TIMESTAMP="20180703012531655"
+ENV LFR_BUNDLE="${LFR_EDITION}-${LFR_VERSION}-${LFR_TIMESTAMP}.war"
+ENV LFR_DEPS="${LFR_EDITION}-dependencies-${LFR_VERSION}-${LFR_TIMESTAMP}.zip"
+ENV LFR_OSGI_DEPS="${LFR_EDITION}-osgi-${LFR_VERSION}-${LFR_TIMESTAMP}.zip"
 ENV LFR_BIN="/opt/liferay"
 ENV LFR_HOME="/data"
 ENV LFR_DEPLOY="${LFR_HOME}/deploy"
@@ -33,8 +34,8 @@ ADD https://repo1.maven.org/maven2/com/beetstra/jutf7/jutf7/1.0.0/jutf7-1.0.0.ja
 ADD https://repo1.maven.org/maven2/javax/mail/mail/1.4/mail-1.4.jar "${TC_EXT}/mail.jar"
 ADD https://repo1.maven.org/maven2/org/eclipse/persistence/javax.persistence/2.1.1/javax.persistence-2.1.1.jar "${TC_EXT}/persistence.jar"
 ADD https://repo1.maven.org/maven2/org/postgresql/postgresql/42.0.0/postgresql-42.0.0.jar "${TC_EXT}/postgresql.jar"
+ADD https://repo1.maven.org/maven2/com/liferay/portal/support-tomcat/7.0.0-nightly/support-tomcat-7.0.0-nightly.jar "${TC_EXT}/support-tomcat.jar"
 ADD https://repository.jboss.org/maven2/javax/jms/jms/1.1/jms-1.1.jar "${TC_EXT}/jms.jar"
-ADD support-tomcat.jar "${TC_EXT}/support-tomcat.jar"
 
 RUN mkdir -p "${CATALINA_HOME}/conf/Catalina/localhost" \
     && rm -r ${CATALINA_HOME}/webapps/* \
@@ -45,9 +46,8 @@ RUN mkdir -p "${CATALINA_HOME}/conf/Catalina/localhost" \
     && cd "${LFR_BIN}/${LFR_EDITION}-dependencies-${LFR_VERSION}" \
     && mv * "${TC_EXT}/" \
     && unzip "${LFR_BIN}/${LFR_OSGI_DEPS}" -d "${LFR_BIN}" \
-    && mv "${LFR_BIN}/${LFR_EDITION}-${LFR_VERSION}/osgi" "${LFR_BIN}/osgi" \
+    && mv "${LFR_BIN}/${LFR_EDITION}-osgi-${LFR_VERSION}" "${LFR_BIN}/osgi" \
     && cp "${LFR_BIN}/osgi/core/com.liferay.osgi.service.tracker.collections.jar" "${TC_EXT}" \
-    && echo '<Context path="" crossContext="true"></Context>' > "${CATALINA_HOME}/conf/Catalina/localhost/ROOT.xml" \
     && echo 'grant { permission java.security.AllPermission; };' > "${CATALINA_HOME}/conf/catalina.policy" \
     && sed -i "s/\(common\.loader=\).*\$/\1${TC_COMMON_LOADER}/" "${CATALINA_HOME}/conf/catalina.properties" \
     && rm -r "${CATALINA_HOME}"/webapps/ROOT.war ${LFR_BIN}/${LFR_EDITION}-dependencies* ${LFR_BIN}/${LFR_EDITION}-osgi-*.zip
@@ -57,3 +57,4 @@ VOLUME ["/data"]
 EXPOSE 8080
 
 ENTRYPOINT [ "/entrypoint.sh" ]
+

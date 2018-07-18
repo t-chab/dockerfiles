@@ -21,6 +21,7 @@ then
 admin.email.from.name=Test Test
 jdbc.default.jndi.name=jdbc/LiferayPool
 liferay.home=/data
+setup.wizard.enabled=false
 EOF
 fi
 

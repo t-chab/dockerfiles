@@ -1,13 +1,25 @@
 FROM alpine:latest
 
-LABEL maintainer="docker@chabs.name"
+MAINTAINER docker@chabs.name
 
 ADD deluge.sh /home/deluge/deluge.sh
 
-RUN apk --update add --virtual build-dependencies git python-dev wget && \
-    apk --update add boost-python boost-system geoip libressl libtorrent && \
-    p7zip py2-pip runit unrar && \
-    mkdir -p /opt && cd /opt && git clone http://git.deluge-torrent.org/deluge && \
+RUN apk --update add --virtual build-dependencies automake autoconf \
+    boost-dev file g++ gcc geoip-dev git intltool libtool \
+    libffi-dev librsvg-dev libressl-dev make musl-dev python-dev wget && \
+    apk --update add boost-python boost-system geoip libressl p7zip py2-pip runit unrar && \
+    mkdir /opt && cd /opt && git clone https://github.com/arvidn/libtorrent && \
+    cd libtorrent* && git checkout tags/libtorrent-1_1_3 && cd /opt/libtorrent* && \
+    ./autotool.sh && \
+    ./configure --prefix=/usr \
+    --enable-debug=no \
+    --enable-python-binding \
+    --enable-logging=default \
+    --enable-disk-stats \
+    --with-boost-system=boost_system \
+    --with-libiconv && \
+    make && make install && make clean && \
+    cd /opt && git clone http://git.deluge-torrent.org/deluge && \
     cd /opt/deluge && git checkout tags/deluge-1.3.15 && \
     pip install --upgrade pip && pip install chardet cffi cryptography \
     mako pyopenssl pyxdg service_identity six slimit twisted && \

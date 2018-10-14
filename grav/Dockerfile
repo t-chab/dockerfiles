@@ -1,6 +1,6 @@
-FROM alpine:latest
+FROM alpine:3.8
 
-ENV GRAV_VERSION="1.4.5"
+ENV GRAV_VERSION="1.5.3"
 ENV GRAV_HOME="/var/www/grav-admin"
 
 RUN apk --no-cache --update add nginx git wget shadow ca-certificates php7 \

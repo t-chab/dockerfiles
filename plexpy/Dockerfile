@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN apk --update add python git py-cffi py-six py-openssl py-cryptography py-enum34 runit && \
+RUN apk --update add python git py-cffi py-six py-openssl py-cryptography py-enum34 py-setuptools runit && \
     mkdir /opt && cd /opt && git clone https://github.com/drzoidberg33/plexpy.git && \
     addgroup -g 5000 plexpy && \
     adduser -S -s /sbin/nologin -u 5000 -h "/opt/plexpy" -G plexpy plexpy && \

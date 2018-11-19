@@ -16,6 +16,9 @@ ENV DEPS dbus-dev faac-dev libhdhomerun-dev libressl-dev libtheora-dev \
 # Just set XMLTV_EPG_URL environment variable with EPG URL
 ADD tv_grab_iptv /usr/bin/tv_grab_iptv
 
+# Schedule Direct official grabber from xmltv project
+ADD "https://raw.githubusercontent.com/XMLTV/xmltv/master/grab/zz_sdjson/tv_grab_zz_sdjson" /usr/bin/tv_grab_zz_sdjson
+
 RUN apk --no-cache --update add coreutils python3 libhdhomerun-libs ca-certificates \
     && apk add --no-cache --virtual build_deps ${DEV_TOOLS} \
     && apk add --no-cache ${DEPS} \

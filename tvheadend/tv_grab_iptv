@@ -63,3 +63,6 @@ cat ${TMPFILE}
 
 # Cleanup
 rm "${TMPFILE}"
+
+# TODO : Test combined commands (XMLTV from url and from SD grabber)
+#/usr/bin/tv_grab_zz_sdjson --config-file /data/conf/sd_grab/conf --days 7 --output /dev/stdout

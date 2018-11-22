@@ -8,7 +8,7 @@ ENV TVHEADEND_GID=5000
 
 ENV DEV_TOOLS build-base bsd-compat-headers ccache cmake git mercurial
 ENV DEPS dbus-dev faac-dev libhdhomerun-dev libressl-dev libtheora-dev \
-    libvorbis-dev libvpx-dev musl-dev perl ffmpeg-dev libdvbcsa-dev uriparser-dev \
+    libvorbis-dev libvpx-dev musl-dev perl ffmpeg ffmpeg-dev libdvbcsa-dev uriparser-dev \
     x264-dev x265-dev zlib-dev linux-headers xmlto gettext-dev opus-dev \
     xmltv perl-json perl-datetime perl-lwp-protocol-https tzdata
 

@@ -17,7 +17,7 @@ ENV DEPS dbus-dev faac-dev libhdhomerun-dev libressl-dev libtheora-dev \
 ADD tv_grab_iptv /usr/bin/tv_grab_iptv
 
 # Schedule Direct official grabber from xmltv project
-ADD --chmod=755 "https://raw.githubusercontent.com/XMLTV/xmltv/master/grab/zz_sdjson/tv_grab_zz_sdjson" /usr/bin/tv_grab_zz_sdjson
+ADD "https://raw.githubusercontent.com/XMLTV/xmltv/master/grab/zz_sdjson/tv_grab_zz_sdjson" /usr/bin/tv_grab_zz_sdjson
 ADD sd_grab.conf /data/conf/sd_grab.conf
 
 RUN apk --no-cache --update add coreutils python3 libhdhomerun-libs ca-certificates \
@@ -51,6 +51,7 @@ RUN apk --no-cache --update add coreutils python3 libhdhomerun-libs ca-certifica
     && make && make install && make clean \
     && rm -rf /var/cache/apk/* \
     && rm -rf /opt \
+    && chmod 755 /usr/bin/tv_grab* \
     && apk del --purge build_deps
 
 # HTSP port

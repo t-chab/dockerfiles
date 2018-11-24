@@ -29,7 +29,6 @@ then
    
    if [ "--version" = "$OPTION" ]
    then
-      echo "XMLTV module version 0.1"
       echo "tv_grab_iptv version 0.1, 2018/05/20 21:30:00"
       exit
    fi
@@ -39,30 +38,40 @@ then
         echo "Generic XmlTV EPG grabber for IPTV."
         exit
    fi
+
+   if [ "--capabilities" = "$OPTION" ]
+   then
+        echo "baseline manualconfig"
+        exit
+   fi
  
    usage
 fi
 
-if [ -z "${XMLTV_EPG_URL}" ]
+if [ -n "${XMLTV_EPG_URL}" ]
 then
-   echo "No valid XMLTV_EPG_URL environment variable set !"
-   exit 1
+
+    # Zip file name, with current process PID
+    TMPFILE="/tmp/$$.xmltv"
+
+    # Nice cleanup in case of interrupt
+    trap "_stop" 1 2 3 15
+
+    # Downloading XmlTV data
+    wget -q "${XMLTV_EPG_URL}" -O "${TMPFILE}"
+
+    # Send TV guide to standard output
+    cat ${TMPFILE}
+
+    # Cleanup
+    rm "${TMPFILE}"
 fi
 
-# Zip file name, with current process PID
-TMPFILE="/tmp/$$.xmltv"
+# If SD_CONF environment variables point to an existing file
+# Then output data from schedules direct grabber
+LOCAL_SD_CONF=${SD_CONF:-"/data/conf/sd_grab.conf"}
+if [ -f "${LOCAL_SD_CONF}" ]
+then
+    /usr/bin/tv_grab_zz_sdjson --config-file "${LOCAL_SD_CONF}" --days 15 --output /dev/stdout 2> /dev/null
+fi
 
-# Nice cleanup in case of interrupt
-trap "_stop" 1 2 3 15
-
-# Downloading XmlTV data
-wget -q "${XMLTV_EPG_URL}" -O "${TMPFILE}"
-
-# Send TV guide to standard output
-cat ${TMPFILE}
-
-# Cleanup
-rm "${TMPFILE}"
-
-# TODO : Test combined commands (XMLTV from url and from SD grabber)
-#/usr/bin/tv_grab_zz_sdjson --config-file /data/conf/sd_grab/conf --days 7 --output /dev/stdout

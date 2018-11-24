@@ -8,7 +8,8 @@ ENV TVHEADEND_GID=5000
 
 ENV DEV_TOOLS build-base bsd-compat-headers ccache cmake git mercurial
 ENV DEPS dbus-dev faac-dev libhdhomerun-dev libressl-dev libtheora-dev \
-    libvorbis-dev libvpx-dev musl-dev perl ffmpeg ffmpeg-dev libdvbcsa-dev uriparser-dev \
+    libvorbis-dev libvpx-dev musl-dev perl ffmpeg netcat-openbsd \
+    ffmpeg-dev libdvbcsa-dev uriparser-dev \
     x264-dev x265-dev zlib-dev linux-headers xmlto gettext-dev opus-dev \
     xmltv perl-json perl-datetime perl-lwp-protocol-https tzdata
 
@@ -51,6 +52,8 @@ RUN apk --no-cache --update add coreutils python3 libhdhomerun-libs ca-certifica
     && make && make install && make clean \
     && rm -rf /var/cache/apk/* \
     && rm -rf /opt \
+    && mkdir -p /opt/tvheadend/.xmltv \
+    && chown -R hts.hts /opt/tvheadend \
     && chmod 755 /usr/bin/tv_grab* \
     && apk del --purge build_deps
 

@@ -29,13 +29,13 @@ then
    
    if [ "--version" = "$OPTION" ]
    then
-      echo "tv_grab_iptv version 0.1, 2018/05/20 21:30:00"
+      echo "tv_grab_iptv_sd version 0.1, 2018/11/24 15:30:00"
       exit
    fi
  
    if [ "--description" = "$OPTION" ]
    then
-        echo "Generic XmlTV EPG grabber for IPTV."
+        echo "Generic XmlTV EPG grabber for IPTV using Schedule Direct data."
         exit
    fi
 
@@ -48,22 +48,11 @@ then
    usage
 fi
 
-if [ -n "${XMLTV_EPG_URL}" ]
+# If SD_CONF environment variables point to an existing file
+# Then output data from schedules direct grabber
+LOCAL_SD_CONF=${SD_CONF:-"/data/conf/sd_grab.conf"}
+if [ -f "${LOCAL_SD_CONF}" ]
 then
-
-    # Zip file name, with current process PID
-    TMPFILE="/tmp/$$.xmltv"
-
-    # Nice cleanup in case of interrupt
-    trap "_stop" 1 2 3 15
-
-    # Downloading XmlTV data
-    wget -q "${XMLTV_EPG_URL}" -O "${TMPFILE}"
-
-    # Send TV guide to standard output
-    cat ${TMPFILE} |gunzip -c
-
-    # Cleanup
-    rm "${TMPFILE}"
+    /usr/bin/tv_grab_zz_sdjson --config-file "${LOCAL_SD_CONF}" --days 15 --output /dev/stdout
 fi
 

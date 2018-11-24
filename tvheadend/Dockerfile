@@ -19,7 +19,9 @@ ADD tv_grab_iptv /usr/bin/tv_grab_iptv
 
 # Schedule Direct official grabber from xmltv project
 ADD "https://raw.githubusercontent.com/XMLTV/xmltv/master/grab/zz_sdjson/tv_grab_zz_sdjson" /usr/bin/tv_grab_zz_sdjson
-ADD sd_grab.conf /data/conf/sd_grab.conf
+
+# Schedule direct EPG grabber wrapper for use with TVHeadend
+ADD tv_grab_iptv_sd /usr/bin/tv_grab_iptv_sd
 
 RUN apk --no-cache --update add coreutils python3 libhdhomerun-libs ca-certificates \
     && apk add --no-cache --virtual build_deps ${DEV_TOOLS} \
@@ -65,3 +67,4 @@ VOLUME ["/data/conf", "/data/media"]
 
 USER hts
 ENTRYPOINT ["/usr/bin/tvheadend", "-c", "/data/conf", "-p", "/run/tvheadend.pid", "-C", "-u", "hts", "-g", "hts"]
+

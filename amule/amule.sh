@@ -1,6 +1,10 @@
 #!/usr/bin/env sh
 
+# Uncomment for debug
 #set -x
+
+# Fail fast
+set -Eeuo pipefail
 
 AMULE_UID=${PUID:-5000}
 AMULE_GID=${PGID:-5000}
@@ -11,19 +15,28 @@ AMULE_TEMP=/temp
 AMULE_CONF=${AMULE_HOME}/amule.conf
 REMOTE_CONF=${AMULE_HOME}/remote.conf
 
-addgroup -g ${AMULE_GID} amule
-adduser -S -s /sbin/nologin -u ${AMULE_UID} -h "/home/amule" -G amule amule
+if grep -q "^${AMULE_GID}:" /etc/group; then
+    echo "Group ${AMULE_GID} already exists. Won't be created."
+else
+    addgroup -g "${AMULE_GID}" amule
+fi
 
+if grep -q "^${AMULE_UID}:" /etc/passwd; then
+    echo "User ${AMULE_UID} already exists. Won't be added."
+else
+    adduser -S -s /sbin/nologin -u "${AMULE_UID}" -h "/home/amule" -G amule amule
+fi
+    
 if [ ! -d "${AMULE_INCOMING}" ]; then
     echo "Directory ${AMULE_INCOMING} does not exists. Creating ..."
     mkdir -p ${AMULE_INCOMING}
-    chown -R ${AMULE_UID}:${AMULE_GID} ${AMULE_INCOMING}
+    chown -R "${AMULE_UID}:${AMULE_GID}" "${AMULE_INCOMING}"
 fi
 
 if [ ! -d "${AMULE_TEMP}" ]; then
     echo "Directory ${AMULE_TEMP} does not exists. Creating ..."
     mkdir -p ${AMULE_TEMP}
-    chown -R ${AMULE_UID}:${AMULE_GID} ${AMULE_TEMP}
+    chown -R "${AMULE_UID}:${AMULE_GID}" "${AMULE_TEMP}"
 fi
 
 if [[ -z "${GUI_PWD}" ]]; then
@@ -32,7 +45,7 @@ if [[ -z "${GUI_PWD}" ]]; then
 else
     AMULE_GUI_PWD="${GUI_PWD}"
 fi
-AMULE_GUI_ENCODED_PWD=$(echo -n ${AMULE_GUI_PWD} | md5sum | cut -d ' ' -f 1)
+AMULE_GUI_ENCODED_PWD=$(echo -n "${AMULE_GUI_PWD}" | md5sum | cut -d ' ' -f 1)
 
 if [[ -z "${WEBUI_PWD}" ]]; then
     AMULE_WEBUI_PWD=$(pwgen -s 64)
@@ -40,11 +53,11 @@ if [[ -z "${WEBUI_PWD}" ]]; then
 else
     AMULE_WEBUI_PWD="${WEBUI_PWD}"
 fi
-AMULE_WEBUI_ENCODED_PWD=$(echo -n ${AMULE_WEBUI_PWD} | md5sum | cut -d ' ' -f 1)
+AMULE_WEBUI_ENCODED_PWD=$(echo -n "${AMULE_WEBUI_PWD}" | md5sum | cut -d ' ' -f 1)
 
 if [ ! -d ${AMULE_HOME} ]; then
     echo "${AMULE_HOME} directory NOT found. Creating directory ..."
-    sudo -H -u amule sh -c "mkdir -p ${AMULE_HOME}"
+    sudo -H -u "${AMULE_UID}" sh -c "mkdir -p ${AMULE_HOME}"
 fi
 
 if [ ! -f ${AMULE_CONF} ]; then
@@ -256,7 +269,6 @@ else
     echo "${REMOTE_CONF} file found. Using existing configuration."
 fi
 
-chown -R ${AMULE_UID}:${AMULE_GID} /home/amule
+chown -R "${AMULE_UID}:${AMULE_GID}" /home/amule
 
-sudo -H -u amule sh -c "amuled -c ${AMULE_HOME} -o"
-
+sudo -H -u "${AMULE_UID}" sh -c "amuled -c ${AMULE_HOME} -o"

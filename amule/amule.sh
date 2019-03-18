@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Uncomment for debug
-set -x
+#set -x
 
 AMULE_UID=${PUID:-5000}
 AMULE_GID=${PGID:-5000}

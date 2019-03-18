@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
 # Uncomment for debug
-#set -x
-
-# Fail fast
-set -Eeuo pipefail
+set -x
 
 AMULE_UID=${PUID:-5000}
 AMULE_GID=${PGID:-5000}
@@ -57,7 +54,7 @@ AMULE_WEBUI_ENCODED_PWD=$(echo -n "${AMULE_WEBUI_PWD}" | md5sum | cut -d ' ' -f 
 
 if [ ! -d ${AMULE_HOME} ]; then
     echo "${AMULE_HOME} directory NOT found. Creating directory ..."
-    sudo -H -u "\#${AMULE_UID}" sh -c "mkdir -p ${AMULE_HOME}"
+    sudo -H -u "#${AMULE_UID}" sh -c "mkdir -p ${AMULE_HOME}"
 fi
 
 if [ ! -f ${AMULE_CONF} ]; then
@@ -271,4 +268,4 @@ fi
 
 chown -R "${AMULE_UID}:${AMULE_GID}" /home/amule
 
-sudo -H -u "\#${AMULE_UID}" sh -c "amuled -c ${AMULE_HOME} -o"
+sudo -H -u "#${AMULE_UID}" sh -c "amuled -c ${AMULE_HOME} -o"

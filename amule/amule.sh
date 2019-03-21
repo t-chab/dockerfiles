@@ -12,8 +12,11 @@ AMULE_TEMP=/temp
 AMULE_CONF=${AMULE_HOME}/amule.conf
 REMOTE_CONF=${AMULE_HOME}/remote.conf
 
+AMULE_GROUP="amule"
 if grep -q ":${AMULE_GID}:" /etc/group; then
     echo "Group ${AMULE_GID} already exists. Won't be created."
+    AMULE_GROUP="$(getent group ${AMULE_GID} | cut -d: -f1)"
+    echo "Group ${AMULE_GROUP} with GID ${AMULE_GID} will be used as amule group."
 else
     addgroup -g "${AMULE_GID}" amule
 fi
@@ -21,7 +24,7 @@ fi
 if grep -q ":${AMULE_UID}:" /etc/passwd; then
     echo "User ${AMULE_UID} already exists. Won't be added."
 else
-    adduser -S -s /sbin/nologin -u "${AMULE_UID}" -h "/home/amule" -G amule amule
+    adduser -S -s /sbin/nologin -u "${AMULE_UID}" -h "/home/amule" -G "${AMULE_GROUP}" amule
 fi
     
 if [ ! -d "${AMULE_INCOMING}" ]; then

@@ -15,7 +15,7 @@ REMOTE_CONF=${AMULE_HOME}/remote.conf
 AMULE_GROUP="amule"
 if grep -q ":${AMULE_GID}:" /etc/group; then
     echo "Group ${AMULE_GID} already exists. Won't be created."
-    AMULE_GROUP="$(getent group ${AMULE_GID} | cut -d: -f1)"
+    AMULE_GROUP=$(getent group "${AMULE_GID}" | cut -d: -f1)
     echo "Group ${AMULE_GROUP} with GID ${AMULE_GID} will be used as amule group."
 else
     addgroup -g "${AMULE_GID}" amule

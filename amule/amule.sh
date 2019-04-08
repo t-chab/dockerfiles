@@ -200,7 +200,7 @@ UPnPWebServerEnabled=0
 UseGzip=1
 UseLowRightsUser=0
 PageRefreshTime=120
-Template=AmuleWebUI-Reloaded
+Template=${AMULE_WEBUI_TEMPLATE}
 Path=amuleweb
 [GUI]
 HideOnClose=0
@@ -276,6 +276,7 @@ then
     echo "Using default theme for web UI."
 else
     sed -i 's,^\(Template[ ]*=\).*,\1'"${AMULE_WEBUI_TEMPLATE}"',g' ${REMOTE_CONF}
+    sed -i 's,^\(Template[ ]*=\).*,\1'"${AMULE_WEBUI_TEMPLATE}"',g' ${AMULE_CONF}
     echo "Switched web UI theme to ${AMULE_WEBUI_TEMPLATE}"
 fi
 

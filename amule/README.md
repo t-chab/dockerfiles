@@ -1,3 +1,7 @@
+# Notice
+
+This Dockerfile is only for x86_64 architecture only. If you're interested in ARM port, have a look at [this fork](https://github.com/synopsis8/dockerfiles)
+
 # Configuration
 
 Create needed directories with

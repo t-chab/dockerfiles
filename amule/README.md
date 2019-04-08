@@ -61,7 +61,7 @@ _WEBUI_TEMPLATE_ to _AmuleWebUI-Reloaded_
 docker run -p 4711:4711 -p 4662:4662 -p 4672:4672/udp \
     -e PUID=[wanted_uid] \
     -e PGID=[wanted_gid] \
-    -e WEBUI_TEMPLATE="AmuleWebUI-Reloaded" \
+    -e WEBUI_TEMPLATE=AmuleWebUI-Reloaded \
     -v ~/.aMule:/home/amule/.aMule \
     -v ~/.aMule/Incoming:/incoming \
     -v ~/.aMule/Temp:/temp tchabaud/amule

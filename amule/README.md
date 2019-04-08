@@ -51,9 +51,7 @@ Then point your browser to http://localhost:4711
 
 ## Web UI theming
 
-If you don't like default amule web ui, you can switch [to this nice bootstrap based web theme](https://github
-.com/MatteoRagni/AmuleWebUI-Reloaded) by setting the environment variable 
-_WEBUI_TEMPLATE_ to _AmuleWebUI-Reloaded_
+If you don't like default amule web ui, you can switch [to this nice bootstrap based web theme](https://github.com/MatteoRagni/AmuleWebUI-Reloaded) by setting the environment variable _WEBUI_TEMPLATE_ to _AmuleWebUI-Reloaded_
 
 *Example* :
 

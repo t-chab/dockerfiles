@@ -48,3 +48,21 @@ docker run -p 4711:4711 -p 4662:4662 -p 4672:4672/udp \
 ```
 
 Then point your browser to http://localhost:4711
+
+## Web UI theming
+
+If you don't like default amule web ui, you can switch [to this nice bootstrap based web theme](https://github
+.com/MatteoRagni/AmuleWebUI-Reloaded) by setting the environment variable 
+_WEBUI_TEMPLATE_ to _AmuleWebUI-Reloaded_
+
+*Example* :
+
+```sh
+docker run -p 4711:4711 -p 4662:4662 -p 4672:4672/udp \
+    -e PUID=[wanted_uid] \
+    -e PGID=[wanted_gid] \
+    -e WEBUI_TEMPLATE="AmuleWebUI-Reloaded" \
+    -v ~/.aMule:/home/amule/.aMule \
+    -v ~/.aMule/Incoming:/incoming \
+    -v ~/.aMule/Temp:/temp tchabaud/amule
+```

@@ -23,11 +23,11 @@ RUN mkdir -p /opt \
     && make install
 
 # Build crypto++
-RUN mkdir -p /opt && cd /opt
-    && git clone --branch ${CRYPTOPP_VERSION} --single-branch "https://github.com/weidai11/cryptopp" /opt/cryptopp
-    && cd /opt/cryptopp
-    && sed -i -e 's/^CXXFLAGS/#CXXFLAGS/' GNUmakefile
-    && export CXXFLAGS="${CXXFLAGS} -DNDEBUG -fPIC"
+RUN mkdir -p /opt && cd /opt \
+    && git clone --branch ${CRYPTOPP_VERSION} --single-branch "https://github.com/weidai11/cryptopp" /opt/cryptopp \
+    && cd /opt/cryptopp \
+    && sed -i -e 's/^CXXFLAGS/#CXXFLAGS/' GNUmakefile \
+    && export CXXFLAGS="${CXXFLAGS} -DNDEBUG -fPIC" \
     && make -f GNUmakefile \
     && make libcryptopp.so \
     && install -Dm644 libcryptopp.so* /usr/lib/ \

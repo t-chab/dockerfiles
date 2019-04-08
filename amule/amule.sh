@@ -5,6 +5,7 @@
 
 AMULE_UID=${PUID:-5000}
 AMULE_GID=${PGID:-5000}
+AMULE_WEBUI_TEMPLATE=${WEBUI_TEMPLATE:"default"}
 
 AMULE_HOME=/home/amule/.aMule
 AMULE_INCOMING=/incoming
@@ -27,13 +28,13 @@ else
     adduser -S -s /sbin/nologin -u "${AMULE_UID}" -h "/home/amule" -G "${AMULE_GROUP}" amule
 fi
     
-if [ ! -d "${AMULE_INCOMING}" ]; then
+if [[ ! -d "${AMULE_INCOMING}" ]]; then
     echo "Directory ${AMULE_INCOMING} does not exists. Creating ..."
     mkdir -p ${AMULE_INCOMING}
     chown -R "${AMULE_UID}:${AMULE_GID}" "${AMULE_INCOMING}"
 fi
 
-if [ ! -d "${AMULE_TEMP}" ]; then
+if [[ ! -d "${AMULE_TEMP}" ]]; then
     echo "Directory ${AMULE_TEMP} does not exists. Creating ..."
     mkdir -p ${AMULE_TEMP}
     chown -R "${AMULE_UID}:${AMULE_GID}" "${AMULE_TEMP}"
@@ -55,12 +56,12 @@ else
 fi
 AMULE_WEBUI_ENCODED_PWD=$(echo -n "${AMULE_WEBUI_PWD}" | md5sum | cut -d ' ' -f 1)
 
-if [ ! -d ${AMULE_HOME} ]; then
+if [[ ! -d ${AMULE_HOME} ]]; then
     echo "${AMULE_HOME} directory NOT found. Creating directory ..."
-    sudo -H -u '#'${AMULE_UID} sh -c "mkdir -p ${AMULE_HOME}"
+    sudo -H -u '#'"${AMULE_UID}" sh -c "mkdir -p ${AMULE_HOME}"
 fi
 
-if [ ! -f ${AMULE_CONF} ]; then
+if [[ ! -f ${AMULE_CONF} ]]; then
     echo "${AMULE_CONF} file NOT found. Generating new default configuration ..."
     cat > ${AMULE_CONF} <<- EOM
 [eMule]
@@ -246,7 +247,7 @@ else
     echo "${AMULE_CONF} file found. Using existing configuration."
 fi
 
-if [ ! -f ${REMOTE_CONF} ]; then
+if [[ ! -f ${REMOTE_CONF} ]]; then
     echo "${REMOTE_CONF} file NOT found. Generating new default configuration ..."
     cat > ${REMOTE_CONF} <<- EOM
 Locale=
@@ -258,7 +259,7 @@ Password=${AMULE_GUI_ENCODED_PWD}
 Port=4711
 UPnPWebServerEnabled=0
 UPnPTCPPort=50001
-Template=default
+Template=${AMULE_WEBUI_TEMPLATE}
 UseGzip=1
 AllowGuest=0
 AdminPassword=${AMULE_WEBUI_ENCODED_PWD}
@@ -269,6 +270,15 @@ else
     echo "${REMOTE_CONF} file found. Using existing configuration."
 fi
 
+# Define web UI theme if needed
+if [[ "${AMULE_WEBUI_TEMPLATE}" = "default" ]]
+then
+    echo "Using default theme for web UI."
+else
+    sed -i 's,^\(Template[ ]*=\).*,\1'"${AMULE_WEBUI_TEMPLATE}"',g' ${REMOTE_CONF}
+    echo "Switched web UI theme to ${AMULE_WEBUI_TEMPLATE}"
+fi
+
 chown -R "${AMULE_UID}:${AMULE_GID}" /home/amule
 
-sudo -H -u '#'${AMULE_UID} sh -c "amuled -c ${AMULE_HOME} -o"
+sudo -H -u '#'"${AMULE_UID}" sh -c "amuled -c ${AMULE_HOME} -o"

@@ -68,7 +68,7 @@ RUN mkdir -p /opt/amule \
 # Install a nicer web ui
 RUN cd /usr/share/amule/webserver \
     && git clone https://github.com/MatteoRagni/AmuleWebUI-Reloaded \
-    && rm -rf .git AmuleWebUI-Reloaded/doc-images
+    && rm -rf AmuleWebUI-Reloaded/.git AmuleWebUI-Reloaded/doc-images
 
 # Add startup script
 ADD amule.sh /home/amule/amule.sh

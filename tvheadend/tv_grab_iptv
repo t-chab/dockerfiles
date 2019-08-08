@@ -29,7 +29,7 @@ then
    
    if [ "--version" = "$OPTION" ]
    then
-      echo "tv_grab_iptv version 0.1, 2018/05/20 21:30:00"
+      echo "tv_grab_iptv version 0.1, 2019/08/08 22:00:00"
       exit
    fi
  
@@ -61,7 +61,7 @@ then
     wget -q "${XMLTV_EPG_URL}" -O "${TMPFILE}"
 
     # Send TV guide to standard output
-    cat ${TMPFILE} |gunzip -c
+    gunzip -c ${TMPFILE}
 
     # Cleanup
     rm "${TMPFILE}"

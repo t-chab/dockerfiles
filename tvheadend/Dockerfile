@@ -1,43 +1,28 @@
-FROM alpine:3.8
+ARG BIN_DEPS="ca-certificates coreutils netcat-openbsd \
+    perl perl-datetime perl-json perl-lwp-protocol-https \
+    pngquant tzdata xmltv "
 
-LABEL MAINTAINER=docker@chabs.name
+FROM alpine:3.10 AS builder
 
-ENV TVHEADEND_VERSION="4.2.7"
-ENV TVHEADEND_UID=5000
-ENV TVHEADEND_GID=5000
-
+ENV TVHEADEND_VERSION="4.2.8"
 ENV DEV_TOOLS build-base bsd-compat-headers ccache cmake git mercurial
-ENV DEPS dbus-dev faac-dev libhdhomerun-dev libressl-dev libtheora-dev \
-    libvorbis-dev libvpx-dev musl-dev perl ffmpeg netcat-openbsd \
-    ffmpeg-dev libdvbcsa-dev uriparser-dev \
-    x264-dev x265-dev zlib-dev linux-headers xmlto gettext-dev opus-dev \
-    xmltv perl-json perl-datetime perl-lwp-protocol-https tzdata
 
-# Generic EPG grabber for IPTV providers
-# Just set XMLTV_EPG_URL environment variable with EPG URL
-ADD tv_grab_iptv /usr/bin/tv_grab_iptv
+ARG BIN_DEPS
+ENV BIN_DEPS=${BIN_DEPS}
 
-# Schedule Direct official grabber from xmltv project
-ADD "https://raw.githubusercontent.com/XMLTV/xmltv/master/grab/zz_sdjson/tv_grab_zz_sdjson" /usr/bin/tv_grab_zz_sdjson
+ENV BUILD_DEPS xmlto linux-headers musl-dev musl-dbg \
+    dbus-dev libressl-dev ffmpeg-dev faac-dev libhdhomerun-dev \
+    libtheora-dev libvorbis-dev libvpx-dev libdvbcsa-dev x264-dev x265-dev opus-dev \
+    avahi-dev gnu-libiconv-dev gettext-dev uriparser-dev zlib-dev
 
-# Schedule direct EPG grabber wrapper for use with TVHeadend
-ADD tv_grab_iptv_sd /usr/bin/tv_grab_iptv_sd
-
-RUN apk --no-cache --update add coreutils python3 libhdhomerun-libs ca-certificates \
-    && apk add --no-cache --virtual build_deps ${DEV_TOOLS} \
-    && apk add --no-cache ${DEPS} \
+RUN apk add --no-cache --update ${BIN_DEPS} ${BUILD_DEPS} ${DEV_TOOLS} \
+    && rm -rf /var/cache/apk/* \
     && update-ca-certificates \
-    && pip3 install gzip-reader \
-    && mkdir /opt \
-    && cd /opt && hg clone "http://linuxtv.org/hg/dvb-apps" \
-    && cd dvb-apps && export PERL_USE_UNSAFE_INC=1 && make && make install \
-    && cd /opt && git clone "https://github.com/tvheadend/tvheadend" \
-    && cd tvheadend && git checkout "tags/v${TVHEADEND_VERSION}" \
-    && addgroup -g ${TVHEADEND_GID} hts \
-    && adduser -S -s /sbin/nologin -u ${TVHEADEND_UID} -h "/opt/tvheadend" -G hts hts \
-    && chown -R ${TVHEADEND_UID}:${TVHEADEND_GID} /opt/tvheadend \
+    && mkdir -p /opt/tvh \
+    && git clone "https://github.com/tvheadend/tvheadend" /opt/tvheadend \
     && cd /opt/tvheadend \
-    && ./configure --prefix=/usr \
+    && git checkout "tags/v${TVHEADEND_VERSION}" \
+    && ./configure --prefix=/opt/tvh \
         --enable-libav \
         --disable-libav_static \
         --enable-dvbcsa \
@@ -50,14 +35,44 @@ RUN apk --no-cache --update add coreutils python3 libhdhomerun-libs ca-certifica
         --disable-libtheora_static \
         --disable-libvorbis_static \
         --disable-libfdkaac_static \
-        --disable-avahi \
-    && make && make install && make clean \
-    && rm -rf /var/cache/apk/* \
-    && rm -rf /opt \
-    && mkdir -p /opt/tvheadend/.xmltv \
-    && chown -R hts.hts /opt/tvheadend \
-    && chmod 755 /usr/bin/tv_grab* \
-    && apk del --purge build_deps
+        --enable-avahi \
+    && make \
+    && make install \
+    && make clean
+
+FROM alpine:3.10
+
+ARG BIN_DEPS
+ENV BIN_DEPS=${BIN_DEPS}
+
+ENV DEPS dbus-libs libressl ffmpeg faac libhdhomerun-libs \
+    libtheora libvorbis libvpx libdvbcsa x264-libs x265-libs opus \
+    avahi-libs gnu-libiconv gettext-libs liburiparser zlib
+
+ENV TVHEADEND_UID=5000
+ENV TVHEADEND_GID=5000
+ENV TVHEADEND_HOME=/home/tvh
+
+# Schedule Direct official grabber from xmltv project
+ADD "https://raw.githubusercontent.com/XMLTV/xmltv/master/grab/zz_sdjson/tv_grab_zz_sdjson" /usr/bin/tv_grab_zz_sdjson
+
+# Generic EPG grabber for IPTV providers
+# Just set XMLTV_EPG_URL environment variable with EPG URL
+ADD tv_grab_iptv /usr/bin/tv_grab_iptv
+
+# Schedule direct EPG grabber wrapper for use with TVHeadend
+ADD tv_grab_iptv_sd /usr/bin/tv_grab_iptv_sd
+
+COPY --from=builder /opt/tvh/ /
+
+RUN apk --no-cache --update add ${BIN_DEPS} ${DEPS} \
+    && update-ca-certificates \
+    && mkdir -p "${TVHEADEND_HOME}/.xmltv" \
+    && addgroup -g ${TVHEADEND_GID} hts \
+    && adduser -S -s /sbin/nologin -u ${TVHEADEND_UID} -h "${TVHEADEND_HOME}" -G hts hts \
+    && chown -R ${TVHEADEND_UID}:${TVHEADEND_GID} "${TVHEADEND_HOME}" \
+    && chown -R hts.hts "${TVHEADEND_HOME}" \
+    && chmod 755 /usr/bin/tv_grab*
 
 # HTSP port
 EXPOSE 9982
@@ -66,5 +81,5 @@ EXPOSE 9982
 VOLUME ["/data/conf", "/data/media"]
 
 USER hts
-ENTRYPOINT ["/usr/bin/tvheadend", "-c", "/data/conf", "-p", "/run/tvheadend.pid", "-C", "-u", "hts", "-g", "hts"]
+ENTRYPOINT ["/bin/tvheadend", "-c", "/data/conf", "-p", "/run/tvheadend.pid", "-C", "-u", "hts", "-g", "hts"]
 

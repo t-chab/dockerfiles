@@ -63,7 +63,7 @@ ADD tv_grab_iptv /usr/bin/tv_grab_iptv
 # Schedule direct EPG grabber wrapper for use with TVHeadend
 ADD tv_grab_iptv_sd /usr/bin/tv_grab_iptv_sd
 
-COPY --from=builder /opt/tvh/ /
+COPY --from=builder /opt/tvh/ /usr/
 
 RUN apk --no-cache --update add ${BIN_DEPS} ${DEPS} \
     && update-ca-certificates \
@@ -81,5 +81,4 @@ EXPOSE 9982
 VOLUME ["/data/conf", "/data/media"]
 
 USER hts
-ENTRYPOINT ["/bin/tvheadend", "-c", "/data/conf", "-p", "/run/tvheadend.pid", "-C", "-u", "hts", "-g", "hts"]
-
+ENTRYPOINT ["/usr/bin/tvheadend", "-c", "/data/conf", "-p", "/run/tvheadend.pid", "-C", "-u", "hts", "-g", "hts"]

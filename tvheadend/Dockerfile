@@ -23,19 +23,20 @@ RUN apk add --no-cache --update ${BIN_DEPS} ${BUILD_DEPS} ${DEV_TOOLS} \
     && cd /opt/tvheadend \
     && git checkout "tags/v${TVHEADEND_VERSION}" \
     && ./configure --prefix=/opt/tvh \
+        --enable-avahi \
+        --enable-bundle \
         --enable-libav \
-        --disable-libav_static \
         --enable-dvbcsa \
         --enable-hdhomerun_client \
-        --disable-hdhomerun_static \
         --disable-ffmpeg_static \
+        --disable-hdhomerun_static \
+        --disable-libav_static \
+        --disable-libfdkaac_static \
         --disable-libx264_static \
         --disable-libx265_static \
-        --disable-libvpx_static \
         --disable-libtheora_static \
         --disable-libvorbis_static \
-        --disable-libfdkaac_static \
-        --enable-avahi \
+        --disable-libvpx_static \
     && make \
     && make install \
     && make clean

@@ -1,6 +1,6 @@
 ARG BIN_DEPS="ca-certificates coreutils netcat-openbsd \
     perl perl-datetime perl-json perl-lwp-protocol-https \
-    pngquant tzdata xmltv "
+    pngquant tzdata xmltv"
 
 FROM alpine:3.10 AS builder
 
@@ -25,6 +25,7 @@ RUN apk add --no-cache --update ${BIN_DEPS} ${BUILD_DEPS} ${DEV_TOOLS} \
     && ./configure --prefix=/opt/tvh \
         --enable-avahi \
         --enable-bundle \
+        --enable-pngquant \
         --enable-libav \
         --enable-dvbcsa \
         --enable-hdhomerun_client \
@@ -52,6 +53,7 @@ ENV DEPS dbus-libs libressl ffmpeg faac libhdhomerun-libs \
 
 ENV TVHEADEND_UID=5000
 ENV TVHEADEND_GID=5000
+ENV TZ="Europe/Paris"
 ENV TVHEADEND_HOME=/home/tvh
 
 # Schedule Direct official grabber from xmltv project

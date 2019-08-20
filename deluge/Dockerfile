@@ -26,7 +26,7 @@ RUN apk --update add --virtual build-dependencies automake autoconf \
     cd /opt/deluge && python setup.py build && python setup.py install && \
     python -c "import libtorrent; print('LIBTORRENT ENABLED WITH VERSION=' + libtorrent.version)" && \
     mkdir -p /usr/share/GeoIP && \
-    wget -N "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz" -O /tmp/GeoIP.dat.gz && \
+    wget -N "https://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz" -O /tmp/GeoIP.dat.gz && \
     gunzip /tmp/GeoIP.dat.gz && mv /tmp/GeoIP.dat /usr/share/GeoIP/GeoIP.dat && \
     addgroup -g 5000 deluge && \
     adduser -S -s /sbin/nologin -u 5000 -h "/home/deluge" -G deluge deluge && \

@@ -11,6 +11,7 @@ RUN apk add --no-cache --update yarn nodejs git \
     && mkdir -p ${ANTENNAS_HOME} \
     && git clone "https://github.com/TheJF/antennas.git" ${ANTENNAS_HOME} \
     && cd ${ANTENNAS_HOME} \
+    && yarn install \
     && addgroup -g ${ANTENNAS_GID} ${ANTENNAS_USER} \
     && adduser -S -s /sbin/nologin -u ${ANTENNAS_UID} -h "${ANTENNAS_HOME}" -G ${ANTENNAS_GROUP} ${ANTENNAS_USER} \
     && chown -R ${ANTENNAS_UID}:${ANTENNAS_GID} "${ANTENNAS_HOME}" \

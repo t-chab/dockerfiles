@@ -1,5 +1,4 @@
-FROM alpine:latest
-MAINTAINER docker@chabs.name
+FROM alpine:latest as builder
 
 ENV AMULE_VERSION 2.3.2
 ENV UPNP_VERSION 1.6.22
@@ -8,6 +7,9 @@ ENV BOOST_VERSION=1.76.0
 ENV BOOST_VERSION_=1_76_0
 ENV BOOST_ROOT=/usr/include/boost
 
+WORKDIR /tmp
+
+# Upgrade required packages (build)
 RUN apk --update add gd geoip libpng libwebp pwgen sudo wxgtk zlib bash && \
     apk --update add --virtual build-dependencies alpine-sdk automake \
                                autoconf bison g++ gcc gd-dev geoip-dev \
@@ -16,37 +18,33 @@ RUN apk --update add gd geoip libpng libwebp pwgen sudo wxgtk zlib bash && \
                                wxgtk-dev zlib-dev
 
 # Get boost headers
-RUN wget --max-redirect 3 https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_}.tar.gz \
-    && mkdir -p ${BOOST_ROOT} \
-    && tar zxvf boost_${BOOST_VERSION_}.tar.gz -C ${BOOST_ROOT} --strip-components=1
+RUN mkdir -p ${BOOST_ROOT} \
+    && wget "https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_}.tar.gz" \
+    && tar zxf boost_${BOOST_VERSION_}.tar.gz -C ${BOOST_ROOT} --strip-components=1
 
 # Build libupnp
-RUN mkdir -p /opt \
-    && cd /opt \
+RUN mkdir -p /build \
     && wget "http://downloads.sourceforge.net/sourceforge/pupnp/libupnp-${UPNP_VERSION}.tar.bz2" \
-    && tar xvfj libupnp*.tar.bz2 \
+    && tar xfj libupnp*.tar.bz2 \
     && cd libupnp* \
-    && ./configure --prefix=/usr \
-    && make \
-    && make install
+    && ./configure --prefix=/usr >/dev/null \
+    && make -j$(nproc) >/dev/null \
+    && make install \
+    && make DESTDIR=/build install
 
 # Build crypto++
-RUN mkdir -p /opt && cd /opt \
-    && git clone --branch ${CRYPTOPP_VERSION} --single-branch "https://github.com/weidai11/cryptopp" /opt/cryptopp \
-    && cd /opt/cryptopp \
-    && sed -i -e 's/^CXXFLAGS/#CXXFLAGS/' GNUmakefile \
-    && export CXXFLAGS="${CXXFLAGS} -DNDEBUG -fPIC" \
-    && make -f GNUmakefile \
-    && make libcryptopp.so \
-    && install -Dm644 libcryptopp.so* /usr/lib/ \
-    && mkdir -p /usr/include/cryptopp \
-    && install -m644 *.h /usr/include/cryptopp/
+RUN mkdir -p /build \
+    && git clone --branch ${CRYPTOPP_VERSION} --single-branch "https://github.com/weidai11/cryptopp"  \
+    && cd cryptopp* \
+    && make CXXFLAGS="${CXXFLAGS} -DNDEBUG -fPIC" -j$(nproc) -f GNUmakefile dynamic >/dev/null \
+    && make PREFIX="/usr" install \
+    && make DESTDIR=/build PREFIX="/usr" install
 
 # Build amule from source
-RUN mkdir -p /opt/amule \
-    && git clone --branch ${AMULE_VERSION} --single-branch "https://github.com/amule-project/amule" /opt/amule \
-    && cd /opt/amule \
-    && ./autogen.sh \
+RUN mkdir -p /build \
+    && git clone --branch ${AMULE_VERSION} --single-branch "https://github.com/amule-project/amule" \
+    && cd amule* \
+    && ./autogen.sh >/dev/null \
     && ./configure \
         --disable-gui \
         --disable-amule-gui \
@@ -71,21 +69,30 @@ RUN mkdir -p /opt/amule \
         --enable-upnp \
         --disable-debug \
         --with-boost=${BOOST_ROOT} \
-    && make \
-    && make install
+        >/dev/null  \
+    && make -j$(nproc) >/dev/null \
+    && make DESTDIR=/build install
 
 # Install a nicer web ui
-RUN cd /usr/share/amule/webserver \
+RUN cd /build/usr/share/amule/webserver \
     && git clone https://github.com/MatteoRagni/AmuleWebUI-Reloaded \
     && rm -rf AmuleWebUI-Reloaded/.git AmuleWebUI-Reloaded/doc-images
+
+#################################
+
+FROM alpine:latest
+
+COPY --from=builder /build /
 
 # Add startup script
 ADD amule.sh /home/amule/amule.sh
 
-# Final cleanup
+# Final cleanup & upgrade required packages (run)
 RUN chmod a+x /home/amule/amule.sh \
-    && rm -rf /var/cache/apk/* && rm -rf /opt && rm -rf ${BOOST_ROOT} \
-    && apk del build-dependencies
+    && apk --update --no-cache add \
+          sudo bash musl gd geoip wxgtk \
+          gettext libpng libwebp pwgen zlib \
+    && rm -rf /var/cache/apk/*
 
 EXPOSE 4711/tcp 4712/tcp 4672/udp 4665/udp 4662/tcp 4661/tcp
 

@@ -1,6 +1,4 @@
-FROM alpine:latest
-
-LABEL maintainer="docker@chabs.name"
+FROM alpine:3.13
 
 ENV GITHUB_ROOT="https://github.com/tchabaud/lets-encrypt-gandi"
 ENV WORKDIR="/data"

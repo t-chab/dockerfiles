@@ -1,4 +1,0 @@
-#!/usr/bin/env sh
-
-exec 2>&1
-exec chpst -u clamav /usr/bin/freshclam -p /run/clamav/freshclam.pid

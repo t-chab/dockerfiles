@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-exec 2>&1
-exec chpst -P -u sabnzbd:sabnzbd /usr/bin/env python2 /opt/sabnzbd/SABnzbd.py -l0 -f /data/conf/sabnzbd.ini -s 0.0.0.0:8085

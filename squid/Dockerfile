@@ -1,4 +1,4 @@
-FROM alpine:3.11
+FROM alpine:3.13
 
 RUN apk --update add squid \
     && mkdir -p /var/log/squid

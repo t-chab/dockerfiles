@@ -4,7 +4,7 @@ Some useful dockerfiles
 
 ## 2021.06 : Deprecation notice
 
-Please note a lot of this images are now deprecated, because there is better designed and well maintained images available elsewhere.
+Please note a lot of these images are now deprecated, because there is better designed and well maintained images available elsewhere.
 
 For each deprecated images, you'll find below a link to the alternative.
 
